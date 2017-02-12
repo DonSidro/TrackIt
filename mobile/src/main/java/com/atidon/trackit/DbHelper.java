@@ -40,7 +40,7 @@ public class DbHelper extends SQLiteOpenHelper {
     //create tbltimelog statement
     private static final String CREATE_TABLE_TIMELOG = "CREATE TABLE "
             + TABLE_TIMELOG + "(" + TIMELOG_ID + " INTEGER PRIMARY KEY," + TIME + " REAL,"
-            + TIMESTAMP + " DATETIME,"
+            + TIMESTAMP + " TEXT,"
             + LOGTEXT + " TEXT," + TASK_ID + " INTEGER, FOREIGN KEY (" + TASK_ID + ") REFERENCES "
             + TABLE_TASK + "(" + TASK_ID + "));";
 

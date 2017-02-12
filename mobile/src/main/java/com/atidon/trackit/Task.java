@@ -12,8 +12,8 @@ public class Task {
     private String priority;
     private String status;
 
-    public Task(int task_id, String title, String description, String priority, String status){
-        this.task_id = task_id;
+    public Task(String title, String description, String priority, String status){
+        //this.task_id = ; generate id
         this.title = title;
         this.description = description;
         this.priority = priority;
