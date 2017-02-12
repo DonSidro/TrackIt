@@ -13,7 +13,6 @@ public class Task {
     private String status;
 
     public Task(String title, String description, String priority, String status){
-        //this.task_id = ; generate id
         this.title = title;
         this.description = description;
         this.priority = priority;

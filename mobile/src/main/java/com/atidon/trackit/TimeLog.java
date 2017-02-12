@@ -18,7 +18,6 @@ public class TimeLog {
     DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     public TimeLog(Float time, String logtext, int task_id){
-        //this.timelog_id = ; generate id
         this.time = time;
         Date today = new Date();
         this.timestamp = dateFormat.format(today);
@@ -26,7 +25,26 @@ public class TimeLog {
         this.task_id = task_id;
     }
 
-    //create getters
+    //getters
+    public int getTimelog_id(){
+        return this.timelog_id;
+    }
+
+    public Float getTime(){
+        return this.time;
+    }
+
+    public String getTimestamp(){
+        return this.timestamp;
+    }
+
+    public String getLogtext(){
+        return this.logtext;
+    }
+
+    public int getTask_id(){
+        return this.task_id;
+    }
 
 
 }
