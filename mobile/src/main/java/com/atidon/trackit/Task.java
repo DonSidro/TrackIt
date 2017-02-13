@@ -9,10 +9,10 @@ public class Task {
     private int task_id;
     private String title;
     private String description;
-    private String priority;
+    private int priority;
     private String status;
 
-    public Task(String title, String description, String priority, String status){
+    public Task(String title, String description, int priority, String status){
         this.title = title;
         this.description = description;
         this.priority = priority;
@@ -32,7 +32,7 @@ public class Task {
         return this.description;
     }
 
-    public String getPriority(){
+    public int getPriority(){
         return this.priority;
     }
 

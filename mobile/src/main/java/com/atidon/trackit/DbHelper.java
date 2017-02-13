@@ -3,6 +3,7 @@ package com.atidon.trackit;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by Atila on 12-Feb-17.
@@ -17,26 +18,26 @@ public class DbHelper extends SQLiteOpenHelper {
     //DB version
     private static final int DB_VERSION = 1;
     //Tables names
-    private static final String TABLE_TASK = "tbltask";
-    private static final String TABLE_TIMELOG = "tbltimelog";
+    public static final String TABLE_TASK = "tbltask";
+    public static final String TABLE_TIMELOG = "tbltimelog";
 
     //tbltask column names
-    private static final String TASK_ID = "task_id";
-    private static final String TITLE = "title";
-    private static final String DESCRIPTION = "description";
-    private static final String PRIORITY = "priority";
-    private static final String STATUS = "status";
+    public static final String TASK_ID = "task_id";
+    public static final String TITLE = "title";
+    public static final String DESCRIPTION = "description";
+    public static final String PRIORITY = "priority";
+    public static final String STATUS = "status";
 
     //tbltimelog column names
-    private static final String TIMELOG_ID = "timelog_id";
-    private static final String TIME = "time";
-    private static final String TIMESTAMP = "timestamp";
-    private static final String LOGTEXT = "logtext";
+    public static final String TIMELOG_ID = "timelog_id";
+    public static final String TIME = "time";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String LOGTEXT = "logtext";
 
     //create tbltask statement
     private static final String CREATE_TABLE_TASK = "CREATE TABLE "
             + TABLE_TASK + "(" + TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," + TITLE + " TEXT,"
-            + DESCRIPTION + " TEXT," + PRIORITY + " TEXT," + STATUS + " TEXT)";
+            + DESCRIPTION + " TEXT," + PRIORITY + " INTEGER," + STATUS + " TEXT)";
     //create tbltimelog statement
     private static final String CREATE_TABLE_TIMELOG = "CREATE TABLE "
             + TABLE_TIMELOG + "(" + TIMELOG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," + TIME + " REAL,"
@@ -54,6 +55,7 @@ public class DbHelper extends SQLiteOpenHelper {
         //Create tables
         db.execSQL(CREATE_TABLE_TASK);
         db.execSQL(CREATE_TABLE_TIMELOG);
+        Log.d("tables created","tables created");
     }
 
     @Override

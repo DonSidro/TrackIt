@@ -1,5 +1,6 @@
 package com.atidon.trackit;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -40,6 +41,29 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        //TEST!
+        Task newTask = new Task("microsft2","test2",2,"inprogress");
+        TimeLog newTimeLog = new TimeLog(2.5,"finished this task!",12);
+        DataProvider dataProvider = new DataProvider(this);
+        dataProvider.insertTask(newTask);
+        dataProvider.insertTimeLog(newTimeLog);
+        Cursor cursor = dataProvider.selectAllTasks();
+        Cursor cursor2 = dataProvider.selectAllTimeLogs();
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            System.out.println(cursor.getColumnName(0)+": "+cursor.getInt(0)+ " | "+ cursor.getColumnName(1)+ ": "+ cursor.getString(1)+" | "+cursor.getColumnName(2)+
+                    ": "+cursor.getString(2)+ " | "+cursor.getColumnName(3)+": "+cursor.getInt(3)+" | "+cursor.getColumnName(4)+": "+cursor.getString(4));
+            cursor.moveToNext();
+        }
+
+        cursor2.moveToFirst();
+        while (!cursor2.isAfterLast()) {
+            System.out.println(cursor2.getColumnName(0)+": "+cursor2.getInt(0)+ " | "+ cursor2.getColumnName(1)+ ": "+ cursor2.getDouble(1)+" | "+cursor2.getColumnName(2)+
+                    ": "+cursor2.getString(2)+ " | "+cursor2.getColumnName(3)+": "+cursor2.getString(3)+" | "+cursor2.getColumnName(4)+": "+cursor2.getInt(4));
+            cursor2.moveToNext();
+        }
+        //TEST!
     }
 
     @Override

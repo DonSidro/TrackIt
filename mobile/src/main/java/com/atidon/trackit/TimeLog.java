@@ -11,13 +11,13 @@ import java.util.Date;
 public class TimeLog {
 
     private int timelog_id;
-    private Float time;
+    private Double time;
     private String timestamp;
     private String logtext;
     private int task_id;
     DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
-    public TimeLog(Float time, String logtext, int task_id){
+    public TimeLog(Double time, String logtext, int task_id){
         this.time = time;
         Date today = new Date();
         this.timestamp = dateFormat.format(today);
@@ -30,7 +30,7 @@ public class TimeLog {
         return this.timelog_id;
     }
 
-    public Float getTime(){
+    public Double getTime(){
         return this.time;
     }
 
