@@ -12,7 +12,8 @@ public class Task {
     private int priority;
     private String status;
 
-    public Task(String title, String description, int priority, String status){
+
+    public Task(String title, String description, int priority  , String status){
         this.title = title;
         this.description = description;
         this.priority = priority;
