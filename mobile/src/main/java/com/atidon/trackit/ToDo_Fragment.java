@@ -1,5 +1,6 @@
 package com.atidon.trackit;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,28 +19,34 @@ public class ToDo_Fragment extends Fragment implements TaskViewController.ItemCl
 
     private RecyclerView recView;
     private TaskViewController Controller;
+    DataProvider dataProvider;
 
-    private ArrayList taskdatalist;
+    private ArrayList<Task> taskdatalist;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.todo_fragment, container, false);
+        dataProvider = new DataProvider(getActivity());
+        taskdatalist = dataProvider.getListToDo();
+        Controller = new TaskViewController(taskdatalist, getActivity());
+        Controller.setItemClickCallBack(this);
+
 
         recView = (RecyclerView) rootView.findViewById(R.id.rec_view);
         recView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-
-
-        Controller = new TaskViewController(DummyData.getListData(), rootView.getContext());
         recView.setAdapter(Controller);
-        Controller.setItemClickCallBack(this);
-
 
         return rootView;
     }
 
     @Override
     public void onItemClick(View v, int p) {
+        ContentValues cv = new ContentValues();
+        cv.put("status","IN PROGRESS");
+        Task task = taskdatalist.get(p);
+        dataProvider.updatedb(cv,task.getTask_id());
+        TaskOverview.mSectionsPagerAdapter.notifyDataSetChanged();
 
     }
 }

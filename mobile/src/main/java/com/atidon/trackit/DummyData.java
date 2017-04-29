@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 
 public class DummyData {
+
     private static final String[] titles = {"Task 1", "Task 2", "Task 3", "Task 4"};
 
     private static final String[] subTitles = {"Kill the dog and the cat", "eat shit", "Task 3", "Task 4"};

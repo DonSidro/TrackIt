@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.Settings;
 
+import java.util.ArrayList;
+
 /**
  * Created by Atila on 12-Feb-17.
  */
@@ -25,7 +27,7 @@ public class DataProvider {
         ContentValues values = new ContentValues();
         values.put(DbHelper.TITLE, task.getTitle());
         values.put(DbHelper.DESCRIPTION, task.getDescription());
-        values.put(DbHelper.PRIORITY, task.getPriority());
+        values.put(DbHelper.PRIORITY, task.getType());
         values.put(DbHelper.STATUS, task.getStatus());
         return database.insert(DbHelper.TABLE_TASK, null, values);
     }
@@ -38,6 +40,41 @@ public class DataProvider {
         }
         return cursor;
     }
+
+    public ArrayList<Task> getListToDo(){
+        ArrayList<Task> mArrayList = new ArrayList<Task>();
+        Cursor mCursor = selectAllTasks();
+        int i = 0;
+        mCursor.moveToFirst();
+        while (!mCursor.isAfterLast()) {
+            if(mCursor.getString(4).contains("IN PROGRESS")){
+                mCursor.moveToNext();
+            }else{
+                mArrayList.add(i, new Task(mCursor.getInt(0),mCursor.getString(1), mCursor.getString(2), mCursor.getInt(3), mCursor.getString(4)));
+                i++;
+                mCursor.moveToNext();
+            }
+        }
+        return  mArrayList;
+    }
+
+    public ArrayList<Task> getListInProgress(){
+        ArrayList<Task> mArrayList = new ArrayList<Task>();
+        Cursor mCursor = selectAllTasks();
+        int i = 0;
+        mCursor.moveToFirst();
+        while (!mCursor.isAfterLast()) {
+            if(!mCursor.getString(4).contains("IN PROGRESS")){
+                mCursor.moveToNext();
+            }else{
+                mArrayList.add(i, new Task(mCursor.getInt(0),mCursor.getString(1), mCursor.getString(2), mCursor.getInt(3), mCursor.getString(4)));
+                i++;
+                mCursor.moveToNext();
+            }
+        }
+        return  mArrayList;
+    }
+
     //Inserts a log in sqlite db
     public long insertTimeLog(TimeLog timeLog){
         ContentValues values = new ContentValues();
@@ -55,5 +92,9 @@ public class DataProvider {
             cursor.moveToFirst();
         }
         return cursor;
+    }
+
+    public void updatedb(ContentValues cv, int id){
+        database.update(dbHelper.TABLE_TASK, cv, "task_id="+id, null);
     }
 }

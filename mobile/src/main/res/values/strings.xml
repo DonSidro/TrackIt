@@ -8,4 +8,12 @@
     <string name="title_activity_kanban">KanbanActivity</string>
     <string name="title_activity_task_overview">TaskOverview</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="priority">Choose a priority</string>
+
+    <string-array name="priority_array">
+        <item>Work</item>
+        <item>Spare Time</item>
+        <item>School Work</item>
+    </string-array>
 </resources>

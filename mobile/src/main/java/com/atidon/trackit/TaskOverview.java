@@ -1,8 +1,13 @@
 package com.atidon.trackit;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -11,15 +16,22 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
-import android.widget.TextView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.Wearable;
 
-public class TaskOverview extends AppCompatActivity {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class TaskOverview extends AppCompatActivity implements  GoogleApiClient.ConnectionCallbacks,  GoogleApiClient.OnConnectionFailedListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -29,17 +41,27 @@ public class TaskOverview extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    public static SectionsPagerAdapter mSectionsPagerAdapter;
+    /** Android Wear **/
+    GoogleApiClient googleClient;
+
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private AppBarLayout appBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_overview);
+
+        googleClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -58,12 +80,17 @@ public class TaskOverview extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(), AddNewTask.class);
+                startActivityForResult(intent, 0);
             }
         });
+        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
+        AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        p.setScrollFlags(0);
+        toolbar.setLayoutParams(p);
     }
+
 
 
     @Override
@@ -88,6 +115,41 @@ public class TaskOverview extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+        googleClient.connect();
+    }
+    @Override
+    public void onStop(){
+        if (null != googleClient && googleClient.isConnected()) {
+            googleClient.disconnect();
+        }
+        super.onStop();
+    }
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        DatabaseToJSON dbJson = new DatabaseToJSON(TaskOverview.this);
+        try {
+            JSONObject json = dbJson.getJSON();
+            new SendToDataLayerThread("/request-network", json.toString()).start();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -96,7 +158,7 @@ public class TaskOverview extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -123,6 +185,10 @@ public class TaskOverview extends AppCompatActivity {
             // Show 3 total pages.
             return 3;
         }
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -135,6 +201,36 @@ public class TaskOverview extends AppCompatActivity {
                     return "DONE";
             }
             return null;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        mSectionsPagerAdapter.notifyDataSetChanged();
+    }
+
+
+    class SendToDataLayerThread extends Thread {
+        String path;
+        String message;
+
+        SendToDataLayerThread(String p, String msg) {
+            path = p;
+            message = msg;
+        }
+
+        public void run() {
+            NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleClient).await();
+            for (Node node : nodes.getNodes()) {
+                MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(googleClient, node.getId(), path, message.getBytes()).await();
+                if (result.getStatus().isSuccess()) {
+                    Log.v("myTag", "Message: {" + message + "} sent to: " + node.getDisplayName());
+                }
+                else {
+                    Log.v("myTag", "ERROR: failed to send Message");
+                }
+            }
         }
     }
 }

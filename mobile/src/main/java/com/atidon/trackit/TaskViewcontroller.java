@@ -69,6 +69,7 @@ public class TaskViewController extends RecyclerView.Adapter<TaskViewController.
         private TextView status;
         private ImageView icon;
         private View container;
+
         AdapterView.OnItemClickListener mItemClickListener;
 
 
@@ -90,5 +91,6 @@ public class TaskViewController extends RecyclerView.Adapter<TaskViewController.
             }
 
         }
+
     }
 }
